@@ -4,3 +4,4 @@ src/utils/__pycache__
 notebooks/runs
 runs/
 *.pt
+ByteTrack/
