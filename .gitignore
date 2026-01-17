@@ -1,3 +1,6 @@
 data/dataset/*
 src/computer_vision/__pycache__
+src/utils/__pycache__
+notebooks/runs
+runs/
 *.pt
