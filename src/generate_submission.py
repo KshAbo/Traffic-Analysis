@@ -1,198 +1,124 @@
 import pandas as pd
 import numpy as np
-from scipy.stats import linregress
-from sklearn.model_selection import StratifiedKFold
-from sklearn.ensemble import RandomForestClassifier, VotingClassifier
+import warnings
 from sklearn.preprocessing import LabelEncoder
 from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 import xgboost as xgb
 import lightgbm as lgb
-import warnings
 
-# Suppress warnings for cleaner output
+# Suppress warnings
 warnings.filterwarnings('ignore')
 
-# --- 1. CONFIGURATION ---
-SHIFT = 7  # The Golden Key
-N_FOLDS = 5
+# --- CONFIGURATION ---
+SHIFT = 7 
 SEED = 42
 
-# Define the models for the Ensemble
-def get_ensemble_models():
-    # 1. XGBoost (The Gradient Boosting King)
-    xgb_clf = xgb.XGBClassifier(
-        n_estimators=500,
-        max_depth=6,
-        learning_rate=0.05,
-        subsample=0.8,
-        colsample_bytree=0.8,
-        n_jobs=-1,
-        random_state=SEED,
-        eval_metric='mlogloss'
-    )
-    
-    # 2. LightGBM (Fast and accurate)
-    lgb_clf = lgb.LGBMClassifier(
-        n_estimators=500,
-        num_leaves=31,
-        max_depth=-1,
-        learning_rate=0.05,
-        n_jobs=-1,
-        random_state=SEED,
-        verbose=-1
-    )
-    
-    # 3. Random Forest (The Stabilizer - different math than Boosting)
-    rf_clf = RandomForestClassifier(
-        n_estimators=300,
-        max_depth=10,
-        min_samples_leaf=4,
-        n_jobs=-1,
-        random_state=SEED,
-        class_weight='balanced' 
-    )
-    
-    # Combine into a Voting Classifier (Soft Voting averages probabilities)
-    ensemble = VotingClassifier(
-        estimators=[
-            ('xgb', xgb_clf),
-            ('lgb', lgb_clf),
-            ('rf', rf_clf)
-        ],
-        voting='soft'
-    )
-    return ensemble
-
-# --- 2. ADVANCED FEATURE ENGINEERING ---
-def calculate_trend(series):
-    """Calculates the slope (trend) of the last window."""
-    # We use a simple linear regression on the values to find the slope
-    # If slope > 0, traffic is increasing.
-    try:
-        slope, _, _, _, _ = linregress(range(len(series)), series)
-        return slope
-    except:
-        return 0.0
+# --- 1. NUCLEAR FEATURE ENGINEERING ---
+def create_global_features(df):
+    """
+    Calculates the 'Pulse' of the entire roundabout.
+    If Camera 1 is jammed, Camera 2 is likely affected.
+    """
+    # Group by time to get the average state of ALL cameras
+    global_stats = df.groupby('time_segment_id').agg({
+        'mean_vehicle_count': ['mean', 'max'],
+        'jam_factor': ['mean', 'max']
+    })
+    global_stats.columns = ['_'.join(col).strip() + '_global' for col in global_stats.columns.values]
+    df = df.merge(global_stats, on='time_segment_id', how='left')
+    return df
 
 def feature_engineering(df):
-    print(f"   -> Engineering features for {len(df)} rows...")
+    # 1. Physics Features
+    # Pressure: High positive pressure = Jam accumulation
+    df['pressure'] = df['entry_count'] - df['exit_count']
+    # Jam Factor: Density * Stop Ratio (The most predictive feature)
+    df['jam_factor'] = df['mean_vehicle_count'] * df['stop_ratio']
+    # Flow Efficiency: Speed / Density
+    df['efficiency'] = df['mean_displacement'] / (df['mean_vehicle_count'] + 1.0)
     
-    # A. Time Features
+    # 2. Time Features
     if 'video_time' in df.columns:
         dt = pd.to_datetime(df['video_time'], errors='coerce')
         hour = dt.dt.hour.fillna(12)
-        # Cyclical encoding
         df['hour_sin'] = np.sin(2 * np.pi * hour / 24)
         df['hour_cos'] = np.cos(2 * np.pi * hour / 24)
     else:
-        df['hour_sin'] = 0
-        df['hour_cos'] = 0
+        df['hour_sin'] = 0; df['hour_cos'] = 0
 
-    # B. Physics Interactions
-    # Jam Factor: Density * Stop Ratio
-    df['jam_factor'] = df['mean_vehicle_count'] * df['stop_ratio']
-    # Flow Index: Count / (Displacement + epsilon)
-    df['flow_index'] = df['mean_vehicle_count'] / (df['mean_displacement'] + 1.0)
-
-    # C. "ARIMA-lite" Trend Features
-    # Calculate the slope of vehicle count for each camera segment
-    # (Group by Camera and ID to process the 15-min chunks if possible, 
-    # but here we operate on rows. Ideally, rolling slope is better)
-    # Since we have rolling features, let's add specific Rolling Slopes if possible
-    # For speed, we will rely on Delta features created below.
-    
-    # D. Lags and Rolling Stats (The heavy lifters)
-    # We apply this per Camera
-    df = df.sort_values(by=['Camera', 'time_segment_id'])
-    
-    cols_to_roll = ['mean_vehicle_count', 'stop_ratio', 'flow_imbalance']
-    for col in cols_to_roll:
-        grp = df.groupby('Camera')[col]
-        
-        # Trends
-        df[f'{col}_roll_mean_5'] = grp.rolling(5, min_periods=1).mean().reset_index(0, drop=True)
-        
-        # Momentum (Delta)
-        df[f'{col}_lag_1'] = grp.shift(1)
-        df[f'{col}_delta_1'] = df[col] - df[f'{col}_lag_1']
-        
-        # Acceleration (Delta of Delta)
-        df[f'{col}_accel'] = df[f'{col}_delta_1'] - df[f'{col}_delta_1'].shift(1)
-
-    # Fill NaNs generated by lags
-    df = df.fillna(0)
-
-    # Camera Encoding
+    # 3. Camera Encoding
     cam_map = {"Norman Niles #1": 1, "Norman Niles #2": 2, "Norman Niles #3": 3, "Norman Niles #4": 4}
     if 'Camera' in df.columns:
         df['camera_code'] = df['Camera'].map(cam_map).fillna(0)
-        
+
+    # 4. Rolling Trends (The "Memory")
+    df = df.sort_values(by=['Camera', 'time_segment_id'])
+    grp = df.groupby('Camera')
+    
+    # Calculate trends over the last 5 minutes
+    for col in ['mean_vehicle_count', 'jam_factor', 'pressure']:
+        df[f'{col}_roll_mean'] = grp[col].transform(lambda x: x.rolling(5, min_periods=1).mean())
+        # Acceleration: Is it getting worse FASTER?
+        df[f'{col}_accel'] = df[col] - df[f'{col}_roll_mean']
+
     return df
 
-# --- 3. TRAINING PIPELINE ---
-def train_and_predict(target_name, train_df, test_df, feature_cols):
-    print(f"\n=== Training Ensemble for Target: {target_name} ===")
+# --- 2. THE ENSEMBLE (Optimized for Stability) ---
+def get_stable_ensemble():
+    # XGBoost: The main brain
+    xgb_clf = xgb.XGBClassifier(
+        n_estimators=700, max_depth=6, learning_rate=0.03,
+        subsample=0.8, colsample_bytree=0.8, n_jobs=-1, random_state=SEED,
+        tree_method='hist'
+    )
     
-    # Prepare Labels
-    label_map = {"free flowing": 0, "light delay": 1, "moderate delay": 2, "heavy delay": 3}
-    reverse_map = {v: k for k, v in label_map.items()}
+    # LightGBM: The speedster
+    lgb_clf = lgb.LGBMClassifier(
+        n_estimators=700, num_leaves=31, learning_rate=0.03,
+        class_weight='balanced', n_jobs=-1, random_state=SEED, verbose=-1
+    )
     
-    # Create Lagged Target (The Forecast)
-    # Sort to ensure alignment
-    train_df.sort_values(by=['Camera', 'time_segment_id'], inplace=True)
+    # Random Forest: The stabilizer (prevents overfitting)
+    rf_clf = RandomForestClassifier(
+        n_estimators=500, max_depth=10, min_samples_leaf=4,
+        class_weight='balanced_subsample', n_jobs=-1, random_state=SEED
+    )
     
-    # Map text to int
-    train_df['target_temp'] = train_df[target_name].map(label_map)
-    
-    # SHIFT: Input T -> Target T+7
-    train_df['target_future'] = train_df.groupby('Camera')['target_temp'].shift(-SHIFT)
-    
-    # Clean training data
-    train_clean = train_df.dropna(subset=['target_future']).copy()
-    
-    X = train_clean[feature_cols]
-    y = train_clean['target_future'].astype(int)
-    X_test = test_df[feature_cols]
+    # Soft Voting returns Probabilities, which allows us to threshold later
+    return VotingClassifier(
+        estimators=[('xgb', xgb_clf), ('lgb', lgb_clf), ('rf', rf_clf)],
+        voting='soft', weights=[1.5, 1.0, 1.0]
+    )
 
-    # Impute
-    imputer = SimpleImputer(strategy='median')
-    X_imputed = imputer.fit_transform(X)
-    X_test_imputed = imputer.transform(X_test)
+def apply_thresholds(probs, label_map):
+    """
+    CUSTOM POST-PROCESSING:
+    If the model is >30% sure it's 'Heavy Delay' (Class 3), we trust it.
+    Default argmax would require >25% in a 4-class problem, but we want to be aggressive on jams.
+    """
+    # Classes: 0=Free, 1=Light, 2=Moderate, 3=Heavy
+    final_preds = []
     
-    # Cross-Validation Storage
-    oof_preds = np.zeros((len(X), 4)) # Out of Fold predictions
-    test_preds_accum = np.zeros((len(X_test), 4)) # Test predictions accumulator
+    # Get numeric index for Heavy Delay
+    heavy_idx = label_map["heavy delay"]
+    moderate_idx = label_map["moderate delay"]
     
-    skf = StratifiedKFold(n_splits=N_FOLDS, shuffle=True, random_state=SEED)
-    
-    for fold, (train_idx, val_idx) in enumerate(skf.split(X_imputed, y)):
-        X_tr, y_tr = X_imputed[train_idx], y.iloc[train_idx]
-        X_val, y_val = X_imputed[val_idx], y.iloc[val_idx]
-        
-        # Get Fresh Ensemble
-        model = get_ensemble_models()
-        model.fit(X_tr, y_tr)
-        
-        # Predict Probabilities
-        val_probs = model.predict_proba(X_val)
-        test_probs = model.predict_proba(X_test_imputed)
-        
-        # Accumulate
-        test_preds_accum += test_probs
-        
-        # Score
-        acc = model.score(X_val, y_val)
-        print(f"   Fold {fold+1} Accuracy: {acc:.4f}")
+    for row_probs in probs:
+        # Aggressive thresholding for rare classes
+        if row_probs[heavy_idx] > 0.28: # Lower threshold to catch more jams
+            final_preds.append(heavy_idx)
+        elif row_probs[moderate_idx] > 0.35:
+            final_preds.append(moderate_idx)
+        else:
+            # Otherwise, take the max as usual
+            final_preds.append(np.argmax(row_probs))
+            
+    return final_preds
 
-    # Average Test Predictions
-    avg_test_probs = test_preds_accum / N_FOLDS
-    final_classes = np.argmax(avg_test_probs, axis=1)
-    
-    # Convert back to strings
-    return [reverse_map[c] for c in final_classes]
-
+# --- 3. MAIN PIPELINE ---
 def main():
-    print("--- Loading Data ---")
+    print("--- 1. LOADING ---")
     try:
         path = "../data/"
         train_feats = pd.read_csv(path + 'cv_features_train_ready.csv')
@@ -207,67 +133,105 @@ def main():
         test_meta = pd.read_csv('TestInputSegments.csv')
         sample_sub = pd.read_csv('SampleSubmission.csv')
 
-    # Prep
     train_labels.rename(columns={'view_label': 'Camera'}, inplace=True)
     if 'view_label' in test_meta.columns: test_meta.rename(columns={'view_label': 'Camera'}, inplace=True)
 
-    # Merge
     train_df = pd.merge(train_feats, train_labels, on=['time_segment_id', 'Camera'], how='inner')
     test_df = pd.merge(test_feats, test_meta, on=['time_segment_id', 'Camera'], how='left')
 
-    # Feature Engineering
-    print("--- Feature Engineering ---")
+    print("--- 2. ENGINEERING ---")
     train_df = feature_engineering(train_df)
     test_df = feature_engineering(test_df)
+    train_df = create_global_features(train_df)
+    test_df = create_global_features(test_df)
 
-    # Select Features (Numeric only)
+    # Clean Cols
     exclude = ['camera_id', 'video_file', 'clean_filename', 'Camera', 
                'congestion_enter_rating', 'congestion_exit_rating',
                'target_future', 'time_segment_id', 'minute', 'ID',
                'dt', 'video_time', 'videos', 'date', 'datetimestamp_start', 'datetimestamp_end',
                'responseId', 'ID_enter', 'ID_exit', 'signaling', 'cycle_phase', 'target_temp']
-    
     feature_cols = [c for c in train_df.columns if c not in exclude and np.issubdtype(train_df[c].dtype, np.number)]
-    print(f"Features ({len(feature_cols)}): {feature_cols}")
+    print(f"Features: {len(feature_cols)}")
 
-    # --- PIPELINE 1: ENTER RATING ---
-    enter_preds = train_and_predict("congestion_enter_rating", train_df, test_df, feature_cols)
-    
-    # --- PIPELINE 2: EXIT RATING ---
-    # CRITICAL STEP: We repeat the entire process for the Exit Target
-    exit_preds = train_and_predict("congestion_exit_rating", train_df, test_df, feature_cols)
+    # Setup Targets
+    label_map = {"free flowing": 0, "light delay": 1, "moderate delay": 2, "heavy delay": 3}
+    reverse_map = {v: k for k, v in label_map.items()}
+    train_df.sort_values(by=['Camera', 'time_segment_id'], inplace=True)
 
-    # --- SUBMISSION GENERATION ---
-    print("\n--- Constructing Final Submission ---")
+    # --- PHASE 1: ENTER PREDICTION ---
+    print("\n--- Training ENTER ---")
+    train_df['target_temp'] = train_df['congestion_enter_rating'].map(label_map)
+    train_df['target_future'] = train_df.groupby('Camera')['target_temp'].shift(-SHIFT)
     
-    # Map predictions to IDs
-    # Remember: Input T predicts T+7
+    train_clean = train_df.dropna(subset=['target_future']).copy()
+    y_enter = train_clean['target_future'].astype(int)
+    X_enter = train_clean[feature_cols]
+    
+    imputer = SimpleImputer(strategy='median')
+    X_enter_imp = imputer.fit_transform(X_enter)
+    X_test_imp = imputer.transform(test_df[feature_cols])
+
+    model_enter = get_stable_ensemble()
+    model_enter.fit(X_enter_imp, y_enter)
+    
+    # Get Probabilities instead of hard classes
+    enter_probs = model_enter.predict_proba(X_test_imp)
+    # Apply Thresholding logic
+    enter_preds_idx = apply_thresholds(enter_probs, label_map)
+
+    # --- PHASE 2: EXIT PREDICTION (CHAINED) ---
+    print("\n--- Training EXIT (Chained) ---")
+    train_df['target_temp_exit'] = train_df['congestion_exit_rating'].map(label_map)
+    train_df['target_future_exit'] = train_df.groupby('Camera')['target_temp_exit'].shift(-SHIFT)
+    train_clean_exit = train_df.dropna(subset=['target_future_exit']).copy()
+    
+    # Add ENTER Prediction as a feature for EXIT
+    # This is the "Chain Link"
+    X_exit = train_clean_exit[feature_cols].copy()
+    X_exit['enter_rating_feature'] = train_clean_exit.groupby('Camera')['target_temp'].shift(-SHIFT)
+    
+    # Re-impute
+    X_exit_imp = imputer.fit_transform(X_exit)
+    y_exit = train_clean_exit['target_future_exit'].astype(int)
+    
+    # Add Predicted Enter to Test
+    X_test_exit = pd.DataFrame(X_test_imp, columns=feature_cols)
+    X_test_exit['enter_rating_feature'] = enter_preds_idx
+    
+    # Use a fresh imputer for safety
+    imputer_exit = SimpleImputer(strategy='median')
+    X_exit_imp = imputer_exit.fit_transform(X_exit)
+    X_test_exit_imp = imputer_exit.transform(X_test_exit)
+
+    model_exit = get_stable_ensemble()
+    model_exit.fit(X_exit_imp, y_exit)
+    
+    # Predict Exit
+    exit_probs = model_exit.predict_proba(X_test_exit_imp)
+    exit_preds_idx = apply_thresholds(exit_probs, label_map)
+
+    # --- 3. SAVE ---
+    print("--- Saving ---")
     test_df['predicted_id'] = test_df['time_segment_id'] + SHIFT
-    
-    # Create a lookup dictionary for both Enter and Exit
     preds_map = {}
     
-    for i, row in test_df.iterrows():
-        # ID Construction
-        # 1. Enter ID
-        ent_id = f"time_segment_{int(row['predicted_id'])}_{row['Camera']}_congestion_enter_rating"
-        preds_map[ent_id] = enter_preds[i]
-        
-        # 2. Exit ID
-        ext_id = f"time_segment_{int(row['predicted_id'])}_{row['Camera']}_congestion_exit_rating"
-        preds_map[ext_id] = exit_preds[i]
+    ent_str = [reverse_map[p] for p in enter_preds_idx]
+    ext_str = [reverse_map[p] for p in exit_preds_idx]
 
-    # Fill Sample Submission
+    for i, row in test_df.iterrows():
+        eid = int(row['predicted_id'])
+        cam = row['Camera']
+        preds_map[f"time_segment_{eid}_{cam}_congestion_enter_rating"] = ent_str[i]
+        preds_map[f"time_segment_{eid}_{cam}_congestion_exit_rating"] = ext_str[i]
+
     final_rows = []
     for rid in sample_sub['ID'].values:
-        # Default to 'free flowing' if not found (e.g. edge cases)
         pred = preds_map.get(rid, "free flowing")
         final_rows.append({"ID": rid, "Target": pred, "Target_Accuracy": pred})
         
-    submission = pd.DataFrame(final_rows)
-    submission.to_csv('submission_grandmaster.csv', index=False)
-    print("SUCCESS: 'submission_grandmaster.csv' generated.")
-    print("This submission contains unique predictions for BOTH Enter and Exit ratings.")
+    pd.DataFrame(final_rows).to_csv('submission_infinity.csv', index=False)
+    print("SUCCESS: 'submission_infinity.csv' created.")
 
 if __name__ == "__main__":
     main()
