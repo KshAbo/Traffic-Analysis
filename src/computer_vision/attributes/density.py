@@ -1,30 +1,30 @@
+# src/computer_vision/attributes/density.py
+
 import numpy as np
 
 
 class DensityAggregator:
     """
-    Computes density-related attributes inside a queue ROI
+    Computes density-related attributes inside a queue ROI.
+    If queue ROI is None, returns zeros safely.
     """
 
     def __init__(self, queue_roi):
-        """
-        queue_roi: ROI object (from roi_selector.py)
-        """
         self.queue_roi = queue_roi
         self.frame_densities = []
 
-        # Precompute area once
-        self.roi_area = queue_roi.w * queue_roi.h
-        if self.roi_area <= 0:
-            raise ValueError("Queue ROI has invalid area")
+        if self.queue_roi is not None:
+            self.roi_area = queue_roi.w * queue_roi.h
+            if self.roi_area <= 0:
+                raise ValueError("Queue ROI has invalid area")
+        else:
+            self.roi_area = None
 
     def update(self, tracks):
-        """
-        tracks: list of tracked vehicles for current frame
-        Each track must have a 'bbox'
-        """
-        count_in_roi = 0
+        if self.queue_roi is None:
+            return
 
+        count_in_roi = 0
         for tr in tracks:
             if self.queue_roi.contains_bbox(tr["bbox"]):
                 count_in_roi += 1
@@ -33,9 +33,6 @@ class DensityAggregator:
         self.frame_densities.append(density)
 
     def compute(self):
-        """
-        Returns per-minute density attributes
-        """
         if not self.frame_densities:
             return {
                 "avg_density": 0.0,
@@ -48,7 +45,4 @@ class DensityAggregator:
         }
 
     def reset(self):
-        """
-        Clears per-minute buffer
-        """
         self.frame_densities.clear()

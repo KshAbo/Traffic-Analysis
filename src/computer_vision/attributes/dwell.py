@@ -24,6 +24,8 @@ class DwellTimeAggregator:
             - track_id
             - bbox
         """
+        if self.queue_roi is None:
+            return
 
         current_ids_in_roi = set()
 
