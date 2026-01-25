@@ -44,7 +44,7 @@ time_segment_920_Norman Niles #1_congestion_enter_rating,free flowing,free flowi
 time_segment_921_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
 time_segment_922_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
 time_segment_923_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
-time_segment_988_Norman Niles #1_congestion_enter_rating,heavy delay,heavy delay
+time_segment_988_Norman Niles #1_congestion_enter_rating,light delay,light delay
 time_segment_989_Norman Niles #1_congestion_enter_rating,light delay,light delay
 time_segment_990_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
 time_segment_991_Norman Niles #1_congestion_enter_rating,heavy delay,heavy delay
@@ -52,7 +52,7 @@ time_segment_992_Norman Niles #1_congestion_enter_rating,heavy delay,heavy delay
 time_segment_1173_Norman Niles #1_congestion_enter_rating,moderate delay,moderate delay
 time_segment_1174_Norman Niles #1_congestion_enter_rating,moderate delay,moderate delay
 time_segment_1175_Norman Niles #1_congestion_enter_rating,heavy delay,heavy delay
-time_segment_1176_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
+time_segment_1176_Norman Niles #1_congestion_enter_rating,light delay,light delay
 time_segment_1177_Norman Niles #1_congestion_enter_rating,heavy delay,heavy delay
 time_segment_1242_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
 time_segment_1243_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
@@ -110,7 +110,7 @@ time_segment_2502_Norman Niles #1_congestion_enter_rating,heavy delay,heavy dela
 time_segment_2503_Norman Niles #1_congestion_enter_rating,moderate delay,moderate delay
 time_segment_2504_Norman Niles #1_congestion_enter_rating,moderate delay,moderate delay
 time_segment_2640_Norman Niles #1_congestion_enter_rating,moderate delay,moderate delay
-time_segment_2641_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
+time_segment_2641_Norman Niles #1_congestion_enter_rating,heavy delay,heavy delay
 time_segment_2642_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
 time_segment_2643_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
 time_segment_2644_Norman Niles #1_congestion_enter_rating,moderate delay,moderate delay
@@ -214,7 +214,7 @@ time_segment_4729_Norman Niles #1_congestion_enter_rating,free flowing,free flow
 time_segment_4730_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
 time_segment_4731_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
 time_segment_4732_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
-time_segment_4909_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
+time_segment_4909_Norman Niles #1_congestion_enter_rating,moderate delay,moderate delay
 time_segment_4910_Norman Niles #1_congestion_enter_rating,light delay,light delay
 time_segment_4911_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
 time_segment_4912_Norman Niles #1_congestion_enter_rating,free flowing,free flowing
@@ -239,12 +239,12 @@ time_segment_362_Norman Niles #2_congestion_enter_rating,moderate delay,moderate
 time_segment_363_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
 time_segment_364_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
 time_segment_365_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
-time_segment_466_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
+time_segment_466_Norman Niles #2_congestion_enter_rating,light delay,light delay
 time_segment_467_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
 time_segment_468_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
 time_segment_469_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
-time_segment_470_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
-time_segment_535_Norman Niles #2_congestion_enter_rating,light delay,light delay
+time_segment_470_Norman Niles #2_congestion_enter_rating,light delay,light delay
+time_segment_535_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
 time_segment_536_Norman Niles #2_congestion_enter_rating,light delay,light delay
 time_segment_537_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
 time_segment_538_Norman Niles #2_congestion_enter_rating,light delay,light delay
@@ -273,7 +273,7 @@ time_segment_1173_Norman Niles #2_congestion_enter_rating,moderate delay,moderat
 time_segment_1174_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
 time_segment_1175_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
 time_segment_1176_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
-time_segment_1177_Norman Niles #2_congestion_enter_rating,light delay,light delay
+time_segment_1177_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
 time_segment_1242_Norman Niles #2_congestion_enter_rating,light delay,light delay
 time_segment_1243_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
 time_segment_1244_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
@@ -327,7 +327,7 @@ time_segment_2435_Norman Niles #2_congestion_enter_rating,moderate delay,moderat
 time_segment_2500_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
 time_segment_2501_Norman Niles #2_congestion_enter_rating,light delay,light delay
 time_segment_2502_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
-time_segment_2503_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
+time_segment_2503_Norman Niles #2_congestion_enter_rating,light delay,light delay
 time_segment_2504_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
 time_segment_2640_Norman Niles #2_congestion_enter_rating,light delay,light delay
 time_segment_2641_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
@@ -399,7 +399,7 @@ time_segment_3921_Norman Niles #2_congestion_enter_rating,light delay,light dela
 time_segment_3922_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
 time_segment_3923_Norman Niles #2_congestion_enter_rating,light delay,light delay
 time_segment_3924_Norman Niles #2_congestion_enter_rating,light delay,light delay
-time_segment_4091_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
+time_segment_4091_Norman Niles #2_congestion_enter_rating,free flowing,free flowing
 time_segment_4092_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
 time_segment_4093_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
 time_segment_4094_Norman Niles #2_congestion_enter_rating,moderate delay,moderate delay
@@ -450,7 +450,7 @@ time_segment_200_Norman Niles #3_congestion_enter_rating,free flowing,free flowi
 time_segment_201_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_202_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_292_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
-time_segment_293_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
+time_segment_293_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_294_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_295_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_296_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
@@ -461,7 +461,7 @@ time_segment_364_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_365_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_466_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_467_Norman Niles #3_congestion_enter_rating,light delay,light delay
-time_segment_468_Norman Niles #3_congestion_enter_rating,light delay,light delay
+time_segment_468_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_469_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_470_Norman Niles #3_congestion_enter_rating,light delay,light delay
 time_segment_535_Norman Niles #3_congestion_enter_rating,light delay,light delay
@@ -491,7 +491,7 @@ time_segment_991_Norman Niles #3_congestion_enter_rating,free flowing,free flowi
 time_segment_992_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_1173_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_1174_Norman Niles #3_congestion_enter_rating,light delay,light delay
-time_segment_1175_Norman Niles #3_congestion_enter_rating,light delay,light delay
+time_segment_1175_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_1176_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_1177_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_1242_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
@@ -528,7 +528,7 @@ time_segment_2109_Norman Niles #3_congestion_enter_rating,free flowing,free flow
 time_segment_2110_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_2111_Norman Niles #3_congestion_enter_rating,light delay,light delay
 time_segment_2112_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
-time_segment_2113_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
+time_segment_2113_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_2182_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_2183_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_2184_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
@@ -543,7 +543,7 @@ time_segment_2431_Norman Niles #3_congestion_enter_rating,heavy delay,heavy dela
 time_segment_2432_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_2433_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_2434_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
-time_segment_2435_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
+time_segment_2435_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_2500_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_2501_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_2502_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
@@ -554,7 +554,7 @@ time_segment_2641_Norman Niles #3_congestion_enter_rating,moderate delay,moderat
 time_segment_2642_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_2643_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_2644_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
-time_segment_2709_Norman Niles #3_congestion_enter_rating,light delay,light delay
+time_segment_2709_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_2710_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_2711_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_2712_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
@@ -581,7 +581,7 @@ time_segment_3126_Norman Niles #3_congestion_enter_rating,free flowing,free flow
 time_segment_3127_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_3205_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_3206_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
-time_segment_3207_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
+time_segment_3207_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_3208_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_3209_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_3274_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
@@ -618,7 +618,7 @@ time_segment_3920_Norman Niles #3_congestion_enter_rating,free flowing,free flow
 time_segment_3921_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_3922_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_3923_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
-time_segment_3924_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
+time_segment_3924_Norman Niles #3_congestion_enter_rating,light delay,light delay
 time_segment_4091_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_4092_Norman Niles #3_congestion_enter_rating,heavy delay,heavy delay
 time_segment_4093_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
@@ -627,7 +627,7 @@ time_segment_4095_Norman Niles #3_congestion_enter_rating,light delay,light dela
 time_segment_4160_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_4161_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_4162_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
-time_segment_4163_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
+time_segment_4163_Norman Niles #3_congestion_enter_rating,light delay,light delay
 time_segment_4164_Norman Niles #3_congestion_enter_rating,moderate delay,moderate delay
 time_segment_4339_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
 time_segment_4340_Norman Niles #3_congestion_enter_rating,free flowing,free flowing
@@ -715,8 +715,8 @@ time_segment_1175_Norman Niles #4_congestion_enter_rating,heavy delay,heavy dela
 time_segment_1176_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_1177_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_1242_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
-time_segment_1243_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
-time_segment_1244_Norman Niles #4_congestion_enter_rating,light delay,light delay
+time_segment_1243_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
+time_segment_1244_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
 time_segment_1245_Norman Niles #4_congestion_enter_rating,light delay,light delay
 time_segment_1246_Norman Niles #4_congestion_enter_rating,light delay,light delay
 time_segment_1572_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
@@ -735,10 +735,10 @@ time_segment_1811_Norman Niles #4_congestion_enter_rating,heavy delay,heavy dela
 time_segment_1812_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_1813_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_1878_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
-time_segment_1879_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
+time_segment_1879_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
 time_segment_1880_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_1881_Norman Niles #4_congestion_enter_rating,light delay,light delay
-time_segment_1882_Norman Niles #4_congestion_enter_rating,light delay,light delay
+time_segment_1882_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
 time_segment_2040_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
 time_segment_2041_Norman Niles #4_congestion_enter_rating,light delay,light delay
 time_segment_2042_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
@@ -766,16 +766,16 @@ time_segment_2434_Norman Niles #4_congestion_enter_rating,heavy delay,heavy dela
 time_segment_2435_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_2500_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_2501_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
-time_segment_2502_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
+time_segment_2502_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
 time_segment_2503_Norman Niles #4_congestion_enter_rating,light delay,light delay
-time_segment_2504_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
+time_segment_2504_Norman Niles #4_congestion_enter_rating,light delay,light delay
 time_segment_2640_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
 time_segment_2641_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
 time_segment_2642_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
 time_segment_2643_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
-time_segment_2644_Norman Niles #4_congestion_enter_rating,light delay,light delay
+time_segment_2644_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
 time_segment_2709_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
-time_segment_2710_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
+time_segment_2710_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_2711_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_2712_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_2713_Norman Niles #4_congestion_enter_rating,light delay,light delay
@@ -800,7 +800,7 @@ time_segment_3125_Norman Niles #4_congestion_enter_rating,free flowing,free flow
 time_segment_3126_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
 time_segment_3127_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
 time_segment_3205_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
-time_segment_3206_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
+time_segment_3206_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_3207_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_3208_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_3209_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
@@ -818,7 +818,7 @@ time_segment_3481_Norman Niles #4_congestion_enter_rating,heavy delay,heavy dela
 time_segment_3482_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_3483_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_3484_Norman Niles #4_congestion_enter_rating,light delay,light delay
-time_segment_3485_Norman Niles #4_congestion_enter_rating,light delay,light delay
+time_segment_3485_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
 time_segment_3671_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
 time_segment_3672_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
 time_segment_3673_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
@@ -837,7 +837,7 @@ time_segment_3855_Norman Niles #4_congestion_enter_rating,free flowing,free flow
 time_segment_3920_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
 time_segment_3921_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
 time_segment_3922_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
-time_segment_3923_Norman Niles #4_congestion_enter_rating,moderate delay,moderate delay
+time_segment_3923_Norman Niles #4_congestion_enter_rating,free flowing,free flowing
 time_segment_3924_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_4091_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay
 time_segment_4092_Norman Niles #4_congestion_enter_rating,heavy delay,heavy delay

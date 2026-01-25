@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import warnings
+import os
 from sklearn.preprocessing import LabelEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
@@ -21,22 +22,39 @@ def create_global_features(df):
     If Camera 1 is jammed, Camera 2 is likely affected.
     """
     # Group by time to get the average state of ALL cameras
-    global_stats = df.groupby('time_segment_id').agg({
+    # Check if columns exist before aggregating
+    agg_dict = {
         'mean_vehicle_count': ['mean', 'max'],
         'jam_factor': ['mean', 'max']
-    })
-    global_stats.columns = ['_'.join(col).strip() + '_global' for col in global_stats.columns.values]
-    df = df.merge(global_stats, on='time_segment_id', how='left')
+    }
+    # Filter for existing columns
+    valid_agg = {k: v for k, v in agg_dict.items() if k in df.columns}
+    
+    if valid_agg:
+        global_stats = df.groupby('time_segment_id').agg(valid_agg)
+        global_stats.columns = ['_'.join(col).strip() + '_global' for col in global_stats.columns.values]
+        df = df.merge(global_stats, on='time_segment_id', how='left')
     return df
 
 def feature_engineering(df):
     # 1. Physics Features
     # Pressure: High positive pressure = Jam accumulation
-    df['pressure'] = df['entry_count'] - df['exit_count']
+    if 'entry_count' in df.columns and 'exit_count' in df.columns:
+        df['pressure'] = df['entry_count'] - df['exit_count']
+    else:
+        df['pressure'] = 0
+        
     # Jam Factor: Density * Stop Ratio (The most predictive feature)
-    df['jam_factor'] = df['mean_vehicle_count'] * df['stop_ratio']
+    if 'mean_vehicle_count' in df.columns and 'stop_ratio' in df.columns:
+        df['jam_factor'] = df['mean_vehicle_count'] * df['stop_ratio']
+    else:
+        df['jam_factor'] = 0
+        
     # Flow Efficiency: Speed / Density
-    df['efficiency'] = df['mean_displacement'] / (df['mean_vehicle_count'] + 1.0)
+    if 'mean_displacement' in df.columns and 'mean_vehicle_count' in df.columns:
+        df['efficiency'] = df['mean_displacement'] / (df['mean_vehicle_count'] + 1.0)
+    else:
+        df['efficiency'] = 0
     
     # 2. Time Features
     if 'video_time' in df.columns:
@@ -44,6 +62,10 @@ def feature_engineering(df):
         hour = dt.dt.hour.fillna(12)
         df['hour_sin'] = np.sin(2 * np.pi * hour / 24)
         df['hour_cos'] = np.cos(2 * np.pi * hour / 24)
+    elif 'minute' in df.columns:
+        # Fallback if video_time isn't there but minute is
+        df['hour_sin'] = np.sin(2 * np.pi * df['minute'] / 1440)
+        df['hour_cos'] = np.cos(2 * np.pi * df['minute'] / 1440)
     else:
         df['hour_sin'] = 0; df['hour_cos'] = 0
 
@@ -54,13 +76,16 @@ def feature_engineering(df):
 
     # 4. Rolling Trends (The "Memory")
     df = df.sort_values(by=['Camera', 'time_segment_id'])
-    grp = df.groupby('Camera')
     
-    # Calculate trends over the last 5 minutes
-    for col in ['mean_vehicle_count', 'jam_factor', 'pressure']:
-        df[f'{col}_roll_mean'] = grp[col].transform(lambda x: x.rolling(5, min_periods=1).mean())
-        # Acceleration: Is it getting worse FASTER?
-        df[f'{col}_accel'] = df[col] - df[f'{col}_roll_mean']
+    # Calculate trends over the last 5 minutes (approx 5 rows if data is minutely)
+    cols_to_roll = [c for c in ['mean_vehicle_count', 'jam_factor', 'pressure'] if c in df.columns]
+    
+    if cols_to_roll:
+        grp = df.groupby('Camera')
+        for col in cols_to_roll:
+            df[f'{col}_roll_mean'] = grp[col].transform(lambda x: x.rolling(5, min_periods=1).mean())
+            # Acceleration: Is it getting worse FASTER?
+            df[f'{col}_accel'] = df[col] - df[f'{col}_roll_mean']
 
     return df
 
@@ -119,24 +144,48 @@ def apply_thresholds(probs, label_map):
 # --- 3. MAIN PIPELINE ---
 def main():
     print("--- 1. LOADING ---")
-    try:
-        path = "../data/"
-        train_feats = pd.read_csv(path + 'cv_features_train_ready.csv')
-        test_feats = pd.read_csv(path + 'cv_features_test_ready.csv')
-        train_labels = pd.read_csv(path + 'Train.csv')
-        test_meta = pd.read_csv(path + 'TestInputSegments.csv')
-        sample_sub = pd.read_csv(path + 'SampleSubmission.csv')
-    except:
-        train_feats = pd.read_csv('cv_features_train_ready.csv')
-        test_feats = pd.read_csv('cv_features_test_ready.csv')
-        train_labels = pd.read_csv('Train.csv')
-        test_meta = pd.read_csv('TestInputSegments.csv')
-        sample_sub = pd.read_csv('SampleSubmission.csv')
+    
+    # Robust path handling
+    base_dirs = ["../data/", "data/", "./"]
+    
+    files = {
+        'train_feats': 'cv_features_train_ready.csv',
+        'test_feats': 'cv_features_test_ready.csv',
+        'train_labels': 'Train.csv',
+        'test_meta': 'TestInputSegments.csv',
+        'sample_sub': 'SampleSubmission.csv'
+    }
+    
+    loaded_data = {}
+    
+    for key, filename in files.items():
+        for base in base_dirs:
+            full_path = os.path.join(base, filename)
+            if os.path.exists(full_path):
+                loaded_data[key] = pd.read_csv(full_path)
+                print(f"Loaded {key} from {full_path}")
+                break
+        if key not in loaded_data:
+            print(f"ERROR: Could not find {filename} in {base_dirs}")
+            return
 
-    train_labels.rename(columns={'view_label': 'Camera'}, inplace=True)
-    if 'view_label' in test_meta.columns: test_meta.rename(columns={'view_label': 'Camera'}, inplace=True)
+    train_feats = loaded_data['train_feats']
+    test_feats = loaded_data['test_feats']
+    train_labels = loaded_data['train_labels']
+    test_meta = loaded_data['test_meta']
+    sample_sub = loaded_data['sample_sub']
 
+    # Standardize 'Camera' column name
+    if 'view_label' in train_labels.columns:
+        train_labels.rename(columns={'view_label': 'Camera'}, inplace=True)
+    if 'view_label' in test_meta.columns:
+        test_meta.rename(columns={'view_label': 'Camera'}, inplace=True)
+
+    # MERGE: This brings the Targets (congestion_enter_rating) into the Training Data
+    # Inner join ensures we only train on rows where we have both Features and Labels
     train_df = pd.merge(train_feats, train_labels, on=['time_segment_id', 'Camera'], how='inner')
+    
+    # Left join for Test ensures we keep all submission rows
     test_df = pd.merge(test_feats, test_meta, on=['time_segment_id', 'Camera'], how='left')
 
     print("--- 2. ENGINEERING ---")
@@ -150,9 +199,11 @@ def main():
                'congestion_enter_rating', 'congestion_exit_rating',
                'target_future', 'time_segment_id', 'minute', 'ID',
                'dt', 'video_time', 'videos', 'date', 'datetimestamp_start', 'datetimestamp_end',
-               'responseId', 'ID_enter', 'ID_exit', 'signaling', 'cycle_phase', 'target_temp']
+               'responseId', 'ID_enter', 'ID_exit', 'signaling', 'cycle_phase', 'target_temp',
+               'enter_encoded', 'exit_encoded', 'enter_target', 'exit_target']
+               
     feature_cols = [c for c in train_df.columns if c not in exclude and np.issubdtype(train_df[c].dtype, np.number)]
-    print(f"Features: {len(feature_cols)}")
+    print(f"Features used: {len(feature_cols)}")
 
     # Setup Targets
     label_map = {"free flowing": 0, "light delay": 1, "moderate delay": 2, "heavy delay": 3}
@@ -161,10 +212,13 @@ def main():
 
     # --- PHASE 1: ENTER PREDICTION ---
     print("\n--- Training ENTER ---")
+    # Shift Logic: We predict what happens 'SHIFT' minutes in the future
     train_df['target_temp'] = train_df['congestion_enter_rating'].map(label_map)
     train_df['target_future'] = train_df.groupby('Camera')['target_temp'].shift(-SHIFT)
     
+    # Drop rows where we don't have a future target (end of time series)
     train_clean = train_df.dropna(subset=['target_future']).copy()
+    
     y_enter = train_clean['target_future'].astype(int)
     X_enter = train_clean[feature_cols]
     
@@ -187,9 +241,11 @@ def main():
     train_clean_exit = train_df.dropna(subset=['target_future_exit']).copy()
     
     # Add ENTER Prediction as a feature for EXIT
-    # This is the "Chain Link"
+    # This is the "Chain Link": Use the *actual* future Enter value during training
     X_exit = train_clean_exit[feature_cols].copy()
-    X_exit['enter_rating_feature'] = train_clean_exit.groupby('Camera')['target_temp'].shift(-SHIFT)
+    
+    # We must ensure we are using the shifted Enter target for alignment
+    X_exit['enter_rating_feature'] = train_clean_exit['target_future'] 
     
     # Re-impute
     X_exit_imp = imputer.fit_transform(X_exit)
@@ -226,8 +282,10 @@ def main():
         preds_map[f"time_segment_{eid}_{cam}_congestion_exit_rating"] = ext_str[i]
 
     final_rows = []
+    # Ensure we use the exact IDs from the sample submission
     for rid in sample_sub['ID'].values:
         pred = preds_map.get(rid, "free flowing")
+        # RESTORED: Target_Accuracy column added
         final_rows.append({"ID": rid, "Target": pred, "Target_Accuracy": pred})
         
     pd.DataFrame(final_rows).to_csv('submission_infinity.csv', index=False)
