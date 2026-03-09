@@ -169,14 +169,3 @@ python generate_submission.py  # Create submissions
 3. **Dual Models**: Separate prediction for entry vs exit congestion patterns
 4. **Temporal Context**: Rolling statistics and lag features for time series
 5. **Class Imbalance Handling**: Techniques for rare heavy congestion events
-
-## Contributing
-
-1. Computer vision features in `src/computer_vision/`
-2. Time series modeling in `src/time_series/`
-3. Notebooks for experimentation and visualization
-4. Follow existing code structure and documentation
-
-## License
-
-[Add license information]
