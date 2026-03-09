@@ -110,8 +110,8 @@ def adapt_features():
         test_ready['Camera']  = test_ready['camera_id'].map(CAMERA_MAP)
     
     # Save to data folder
-    out_train = "../data/cv_features_train_ready.csv"
-    out_test  = "../data/cv_features_test_ready.csv"
+    out_train = "../../data/cv_features_train_ready.csv"
+    out_test  = "../../data/cv_features_test_ready.csv"
     
     train_ready.to_csv(out_train, index=False)
     test_ready.to_csv(out_test, index=False)

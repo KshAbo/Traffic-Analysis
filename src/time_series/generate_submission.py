@@ -145,7 +145,7 @@ class ProbOptimizer:
 # --- 4. MAIN PIPELINE ---
 def main():
     print("--- 1. LOADING ---")
-    base_dirs = ["../data/", "data/", "./"]
+    base_dirs = ["../../data/", "data/", "./"]
     files = {'train_feats': 'cv_features_train_ready.csv', 'test_feats': 'cv_features_test_ready.csv', 'train_labels': 'Train.csv', 'test_meta': 'TestInputSegments.csv', 'sample_sub': 'SampleSubmission.csv'}
     loaded = {}
     for key, filename in files.items():
@@ -335,7 +335,7 @@ def main():
         pred = preds_map.get(rid, "free flowing")
         final_rows.append({"ID": rid, "Target": pred, "Target_Accuracy": pred})
         
-    pd.DataFrame(final_rows).to_csv('submission_time_fixed.csv', index=False)
+    # pd.DataFrame(final_rows).to_csv('submission_time_fixed.csv', index=False)
     print("SUCCESS: 'submission_time_fixed.csv' created.")
 
 if __name__ == "__main__":
