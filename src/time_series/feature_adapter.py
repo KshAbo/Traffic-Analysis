@@ -1,4 +1,4 @@
-# src/feature_adapter.py
+# src/time_series/feature_adapter.py
 
 import pandas as pd
 import os
@@ -9,6 +9,7 @@ from config import TRAIN_PATH, TEST_PATH, ID_COL
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEAMA_TRAIN_PATH = os.path.join(BASE_DIR, "train_features.csv")
 TEAMA_TEST_PATH  = os.path.join(BASE_DIR, "test_features.csv")
+
 
 # Map Teammate's camera names to Zindi's camera names
 CAMERA_MAP = {

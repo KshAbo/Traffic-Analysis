@@ -1,0 +1,6 @@
+data/dataset/*
+*pycache*
+notebooks/runs
+runs/
+*.pt
+ByteTrack/
